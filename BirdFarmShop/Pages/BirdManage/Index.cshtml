@@ -31,9 +31,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Bird[0].BirdStatus)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Bird[0].User)
-            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -57,9 +55,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.BirdStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Email)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.BirdId">Edit</a> |

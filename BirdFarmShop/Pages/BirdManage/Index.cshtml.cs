@@ -6,27 +6,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
+using Repositories.IRepository;
+using BusinessObjects.DTOs;
 
 namespace BirdFarmShop.Pages.BirdManage
 {
     public class IndexModel : PageModel
     {
-        private readonly BusinessObjects.Models.BirdFarmShopContext _context;
+        private readonly IBirdRepository _birdRepository;
 
-        public IndexModel(BusinessObjects.Models.BirdFarmShopContext context)
+        public IndexModel(IBirdRepository birdRepository)
         {
-            _context = context;
+            _birdRepository = birdRepository;
         }
 
-        public IList<Bird> Bird { get;set; } = default!;
+        public List<BirdDTO> Bird { get;set; } = default!;
 
-        public async Task OnGetAsync()
+        public void OnGet()
         {
-            if (_context.Birds != null)
-            {
-                Bird = await _context.Birds
-                .Include(b => b.User).ToListAsync();
-            }
+            Bird = _birdRepository.GetAllBird();
         }
     }
 }

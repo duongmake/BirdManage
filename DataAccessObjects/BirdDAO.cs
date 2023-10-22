@@ -11,7 +11,7 @@ namespace DataAccessObjects
 {
     public class BirdDAO
     {
-        private static BirdDAO instance = null;
+        private static BirdDAO instance = null!;
         private static readonly object instanceLock = new object();
         private readonly BirdFarmShopContext _context;
 
@@ -37,36 +37,28 @@ namespace DataAccessObjects
 
         public List<BirdDTO> GetAllBirds()
         {
-            
 
-            var birds = _context.Birds.Include(x => x.UserId).ToList();
+
+            var birds = _context.Birds.ToList();
 
             List<BirdDTO> birdList = new List<BirdDTO>();
             foreach (var bird in birds)
             {
                 var _bird = new BirdDTO()
                 {
-                   
-                 
-
-                    BirdID = bird.BirdId,
+                    BirdId = bird.BirdId,
                     BirdName = bird.BirdName,
-                    UserID = bird.UserId,
                     Estimation = bird.Estimation,
                     Gender = bird.Gender,
-                    WeightOfBird = bird.WeightofBirds,
-                    BirdDecription = bird.BirdDescription,
+                    WeightofBirds = bird.WeightofBirds,
+                    BirdDescription = bird.BirdDescription,
                     BirdStatus = bird.BirdStatus,
-
-
-
-                    
                 };
 
                 birdList.Add(_bird);
             }
 
-           
+
             return birdList;
         }
 
@@ -87,9 +79,9 @@ namespace DataAccessObjects
         {
             try
             {
-            
 
-                return _context.Birds.Include(x => x.UserId).FirstOrDefault()!;
+
+                return _context.Birds.Include(x => x.BirdId).FirstOrDefault()!;
             }
             catch (Exception ex)
             {

@@ -8,15 +8,12 @@ namespace BusinessObjects.DTOs
 {
     public class BirdDTO
     {
-        public int BirdID { get; set; }
-        public string? BirdName { get; set; } 
-
-        public int? UserID {  get; set; }
-
+        public int BirdId { get; set; }
+        public string BirdName { get; set; } = null!;
         public int? Estimation { get; set; }
         public string? Gender { get; set; }
-        public string? WeightOfBird { get; set; }
-        public string? BirdDecription { get; set; }
+        public string? WeightofBirds { get; set; }
+        public string? BirdDescription { get; set; }
         public bool? BirdStatus { get; set; }
     }
 }
