@@ -6,40 +6,46 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BusinessObjects.Models;
+using Repositories.IRepository;
+using BusinessObjects.DTOs;
 
 namespace BirdFarmShop.Pages.BirdManage
 {
     public class CreateModel : PageModel
     {
-        private readonly BusinessObjects.Models.BirdFarmShopContext _context;
+        private readonly IBirdRepository _birdRepository;
 
-        public CreateModel(BusinessObjects.Models.BirdFarmShopContext context)
+        public CreateModel(IBirdRepository birdRepository)
         {
-            _context = context;
+            _birdRepository = birdRepository;
         }
-
-        public IActionResult OnGet()
-        {
-        ViewData["UserId"] = new SelectList(_context.TblUsers, "UserId", "Email");
-            return Page();
-        }
+       
 
         [BindProperty]
         public Bird Bird { get; set; } = default!;
-        
 
+        public int userId;
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-          if (!ModelState.IsValid || _context.Birds == null || Bird == null)
+            userId = (int)HttpContext.Session.GetInt32("UserID")!;
+            var bird = new Bird()
             {
-                return Page();
-            }
-
-            _context.Birds.Add(Bird);
-            await _context.SaveChangesAsync();
+                BirdName = Bird.BirdName,
+                UserId = userId,
+                Estimation = Bird.Estimation,
+                Gender = Bird.Gender,
+                WeightofBirds = Bird.WeightofBirds,
+                BirdDescription = Bird.BirdDescription,
+                BirdStatus = Bird.BirdStatus,
+            };
+            _birdRepository.AddNewBird(bird);
 
             return RedirectToPage("./Index");
+
+
+
+
         }
     }
 }
