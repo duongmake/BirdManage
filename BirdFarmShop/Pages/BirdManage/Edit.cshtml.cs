@@ -7,71 +7,51 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
+using Repositories.IRepository;
 
 namespace BirdFarmShop.Pages.BirdManage
 {
     public class EditModel : PageModel
     {
-        private readonly BusinessObjects.Models.BirdFarmShopContext _context;
+        private readonly IBirdRepository _birdRepository;
 
-        public EditModel(BusinessObjects.Models.BirdFarmShopContext context)
+        public EditModel(IBirdRepository birdRepository)
         {
-            _context = context;
+            _birdRepository = birdRepository;
         }
 
         [BindProperty]
         public Bird Bird { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public int userId;
+
+        public IActionResult OnGet(int? id)
         {
-            if (id == null || _context.Birds == null)
+            if (id == null || _birdRepository.GetAllBird == null)
             {
                 return NotFound();
             }
 
-            var bird =  await _context.Birds.FirstOrDefaultAsync(m => m.BirdId == id);
+            var bird = _birdRepository.GetBirdById(id.Value);
             if (bird == null)
             {
                 return NotFound();
             }
             Bird = bird;
-           ViewData["UserId"] = new SelectList(_context.TblUsers, "UserId", "Email");
+           //ViewData["UserId"] = new SelectList(_context.TblUsers, "UserId", "Email");
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost(int? id)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Attach(Bird).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BirdExists(Bird.BirdId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
+            _birdRepository.UpdateBird(Bird);
 
             return RedirectToPage("./Index");
         }
 
-        private bool BirdExists(int id)
-        {
-          return (_context.Birds?.Any(e => e.BirdId == id)).GetValueOrDefault();
-        }
+        
     }
 }

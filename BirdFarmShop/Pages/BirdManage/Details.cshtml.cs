@@ -6,28 +6,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
+using Repositories.IRepository;
 
 namespace BirdFarmShop.Pages.BirdManage
 {
     public class DetailsModel : PageModel
     {
-        private readonly BusinessObjects.Models.BirdFarmShopContext _context;
+        private readonly IBirdRepository _birdRepository;
 
-        public DetailsModel(BusinessObjects.Models.BirdFarmShopContext context)
+        public DetailsModel(IBirdRepository birdRepository)
         {
-            _context = context;
+            _birdRepository = birdRepository;
         }
 
       public Bird Bird { get; set; } = default!; 
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public IActionResult OnGet(int? id)
         {
-            if (id == null || _context.Birds == null)
+            if (id == null || _birdRepository.GetAllBird == null)
             {
                 return NotFound();
             }
 
-            var bird = await _context.Birds.FirstOrDefaultAsync(m => m.BirdId == id);
+            var bird = _birdRepository.GetBirdById(id.Value);
             if (bird == null)
             {
                 return NotFound();

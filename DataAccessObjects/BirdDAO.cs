@@ -79,9 +79,7 @@ namespace DataAccessObjects
         {
             try
             {
-
-
-                return _context.Birds.Include(x => x.BirdId).FirstOrDefault()!;
+                return _context.Birds.FirstOrDefault(c => c.BirdId == id);
             }
             catch (Exception ex)
             {
@@ -91,18 +89,29 @@ namespace DataAccessObjects
 
         public void UpdateBird(Bird bird)
         {
-            _context.Attach(bird).State = EntityState.Modified;
             try
             {
-                _context.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (BirdExists(bird.BirdId))
+                var _bird = _context.Birds.SingleOrDefault(cus => cus.BirdId == bird.BirdId);
+                if (_bird != null)
                 {
-                    throw new Exception("Bird not exist");
+                    _bird.BirdId = bird.BirdId;
+                    _bird.BirdName = bird.BirdName;
+                    _bird.Estimation = bird.Estimation;
+                    _bird.Gender = bird.Gender;
+                    _bird.WeightofBirds = bird.WeightofBirds;
+                    _bird.BirdDescription = bird.BirdDescription;
+                    _bird.BirdStatus = bird.BirdStatus;
+                    _context.Update(_bird);
+                    _context.SaveChanges();
                 }
-                throw;
+                else
+                {
+                    throw new Exception("The Customer doesn't exist");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
@@ -114,7 +123,8 @@ namespace DataAccessObjects
                 var check = BirdExists(id);
                 if (check)
                 {
-                    _context.Remove(check);
+                    var bird = _context.Birds.Where(p => p.BirdId == id).SingleOrDefault();
+                    _context.Birds.Remove(bird!);
                     _context.SaveChanges();
                 }
                 throw new Exception("Bird not exist");

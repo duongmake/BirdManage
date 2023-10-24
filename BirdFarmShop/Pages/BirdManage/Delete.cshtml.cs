@@ -6,54 +6,47 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
+using Repositories.IRepository;
 
 namespace BirdFarmShop.Pages.BirdManage
 {
     public class DeleteModel : PageModel
     {
-        private readonly BusinessObjects.Models.BirdFarmShopContext _context;
+        private readonly IBirdRepository _birdRepository;
 
-        public DeleteModel(BusinessObjects.Models.BirdFarmShopContext context)
+        public DeleteModel(IBirdRepository birdRepository)
         {
-            _context = context;
+            _birdRepository = birdRepository;
         }
 
         [BindProperty]
       public Bird Bird { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public IActionResult OnGet(int? id)
         {
-            if (id == null || _context.Birds == null)
+            if (id == null || _birdRepository.GetAllBird == null)
             {
                 return NotFound();
             }
 
-            var bird = await _context.Birds.FirstOrDefaultAsync(m => m.BirdId == id);
+            Bird = _birdRepository.GetBirdById(id.Value);
 
-            if (bird == null)
+            if (Bird == null)
             {
                 return NotFound();
             }
-            else 
-            {
-                Bird = bird;
-            }
+            
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public IActionResult OnPost(int? id)
         {
-            if (id == null || _context.Birds == null)
-            {
-                return NotFound();
-            }
-            var bird = await _context.Birds.FindAsync(id);
+            
+           var bird = _birdRepository.GetBirdById(id.Value);
 
             if (bird != null)
             {
-                Bird = bird;
-                _context.Birds.Remove(Bird);
-                await _context.SaveChangesAsync();
+                _birdRepository.DeleteBird(bird.BirdId);
             }
 
             return RedirectToPage("./Index");
